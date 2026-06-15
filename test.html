@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test System - บันทึกรักการอ่าน</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Sarabun', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 2rem;
+      text-align: center;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 1rem;
+    }
+    .test-group {
+      margin-bottom: 2rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 1.5rem;
+      background: #f9f9f9;
+    }
+    .test-group h2 {
+      color: #667eea;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .test-case {
+      background: white;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #667eea;
+      border-radius: 4px;
+    }
+    .test-case.pass {
+      border-left-color: #4caf50;
+      background: #f1f8e9;
+    }
+    .test-case.fail {
+      border-left-color: #f44336;
+      background: #ffebee;
+    }
+    .test-case.warning {
+      border-left-color: #ff9800;
+      background: #fff3e0;
+    }
+    .test-label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+    .test-result {
+      font-size: 0.9rem;
+      color: #666;
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .result-icon {
+      font-size: 1.2rem;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .stat-card h3 {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .stat-card p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    button {
+      flex: 1;
+      padding: 0.8rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      min-width: 150px;
+    }
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+    .btn-secondary {
+      background: #f44336;
+      color: white;
+    }
+    .btn-secondary:hover {
+      background: #da190b;
+    }
+    .output {
+      background: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e0e0e0;
+      color: #999;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 Test System - บันทึกรักการอ่าน</h1>
+
+    <!-- Core Functionality Tests -->
+    <div class="test-group">
+      <h2>✅ การทดสอบหลัก (Core Tests)</h2>
+      <div id="core-tests"></div>
+    </div>
+
+    <!-- Data Persistence Tests -->
+    <div class="test-group">
+      <h2>💾 การทดสอบการจัดเก็บข้อมูล</h2>
+      <div id="storage-tests"></div>
+    </div>
+
+    <!-- Export Functionality Tests -->
+    <div class="test-group">
+      <h2>📄 การทดสอบฟังก์ชั่นส่งออก</h2>
+      <div id="export-tests"></div>
+    </div>
+
+    <!-- Removed Data Tests -->
+    <div class="test-group">
+      <h2>🗑️ การทดสอบการลบรหัสตัวอย่าง</h2>
+      <div id="removed-tests"></div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats" id="stats"></div>
+
+    <!-- Action Buttons -->
+    <div class="button-group">
+      <button class="btn-primary" onclick="runAllTests()">▶️ รันทั้งหมด</button>
+      <button class="btn-secondary" onclick="clearStorageAndTests()">🔄 รีเซ็ตทั้งหมด</button>
+    </div>
+
+    <!-- Output Log -->
+    <div id="output" class="output" style="display:none;"></div>
+
+    <div class="footer">
+      ระบบบันทึกรักการอ่าน - เครื่องมือทดสอบ | สร้างโดย นายณัฐภัทร บัวราช
+    </div>
+  </div>
+
+  <script>
+    // Test Results Storage
+    const results = {
+      core: [],
+      storage: [],
+      export: [],
+      removed: []
+    };
+
+    // Helper Functions
+    function addTest(group, label, passed, details = '') {
+      results[group].push({ label, passed, details });
+      const testDiv = document.createElement('div');
+      testDiv.className = `test-case ${passed ? 'pass' : 'fail'}`;
+      testDiv.innerHTML = `
+        <div class="test-label">${label}</div>
+        <div class="test-result">
+          <span class="result-icon">${passed ? '✅' : '❌'}</span>
+          <span>${details || (passed ? 'ผ่าน' : 'ไม่ผ่าน')}</span>
+        </div>
+      `;
+      return testDiv;
+    }
+
+    function log(msg) {
+      const output = document.getElementById('output');
+      output.style.display = 'block';
+      output.textContent += msg + '\n';
+    }
+
+    function updateStats() {
+      const total = Object.values(results).flat().length;
+      const passed = Object.values(results).flat().filter(r => r.passed).length;
+      const failed = total - passed;
+      const percentage = total > 0 ? Math.round((passed / total) * 100) : 0;
+
+      const statsDiv = document.getElementById('stats');
+      statsDiv.innerHTML = `
+        <div class="stat-card">
+          <h3>${passed}/${total}</h3>
+          <p>ผลการทดสอบ</p>
+        </div>
+        <div class="stat-card">
+          <h3>${percentage}%</h3>
+          <p>อัตราการผ่าน</p>
+        </div>
+        <div class="stat-card">
+          <h3>${failed}</h3>
+          <p>ล้มเหลว</p>
+        </div>
+      `;
+    }
+
+    // TEST 1: Core Functionality
+    function testCore() {
+      const coreDiv = document.getElementById('core-tests');
+      coreDiv.innerHTML = '';
+
+      // Test 1.1: localStorage API
+      try {
+        localStorage.setItem('test', 'value');
+        const val = localStorage.getItem('test');
+        localStorage.removeItem('test');
+        coreDiv.appendChild(addTest('core', 'localStorage API', val === 'value', 'ทำงานได้ปกติ'));
+      } catch (e) {
+        coreDiv.appendChild(addTest('core', 'localStorage API', false, e.message));
+      }
+
+      // Test 1.2: Check if app.js loaded
+      try {
+        const hasDB = typeof DB !== 'undefined';
+        coreDiv.appendChild(addTest('core', 'DB object exists', hasDB, hasDB ? 'DB loaded' : 'DB not found'));
+      } catch (e) {
+        coreDiv.appendChild(addTest('core', 'DB object exists', false, 'Error: ' + e.message));
+      }
+
+      // Test 1.3: Check seedDefaults function
+      try {
+        const hasSeed = typeof DB.seedDefaults === 'function';
+        coreDiv.appendChild(addTest('core', 'seedDefaults function', hasSeed, hasSeed ? 'Found' : 'Not found'));
+      } catch (e) {
+        coreDiv.appendChild(addTest('core', 'seedDefaults function', false, e.message));
+      }
+    }
+
+    // TEST 2: Data Storage
+    function testStorage() {
+      const storageDiv = document.getElementById('storage-tests');
+      storageDiv.innerHTML = '';
+
+      try {
+        // Clear and seed
+        DB.seedDefaults();
+        
+        // Test 2.1: Classes saved
+        const classes = DB.getClasses();
+        storageDiv.appendChild(addTest('storage', 'ข้อมูลห้องเรียนถูกบันทึก', classes.length > 0, `พบ ${classes.length} ห้อง`));
+
+        // Test 2.2: Check if teacher examples removed
+        const teachers = DB.getTeachers();
+        const hasExamples = teachers.some(t => t.password === 'THTUPPT01' || t.password === 'THTUPPT02');
+        storageDiv.appendChild(addTest('storage', 'ไม่มีครูตัวอย่าง', !hasExamples, `ครูทั้งหมด: ${teachers.length}`));
+
+        // Test 2.3: Admin password not set
+        const settings = DB.getSettings();
+        const hasAdminPwd = settings.adminPassword !== undefined;
+        storageDiv.appendChild(addTest('storage', 'ลบรหัสแอดมินตั้งต้น', !hasAdminPwd, 'ไม่มีรหัสแอดมิน'));
+
+      } catch (e) {
+        storageDiv.appendChild(addTest('storage', 'Data Storage', false, e.message));
+      }
+    }
+
+    // TEST 3: Export Functionality
+    function testExport() {
+      const exportDiv = document.getElementById('export-tests');
+      exportDiv.innerHTML = '';
+
+      try {
+        // Test 3.1: exportStudentReadingForm exists
+        const hasExportFunc = typeof exportStudentReadingForm === 'function';
+        exportDiv.appendChild(addTest('export', 'exportStudentReadingForm function', hasExportFunc, hasExportFunc ? 'Found' : 'Not found'));
+
+        // Test 3.2: Create sample data for export
+        DB.seedDefaults();
+        
+        // Create sample student
+        const newStudent = {
+          id: 'STU_TEST_001',
+          studentCode: 'TEST001',
+          name: 'เด็กชายทดสอบ ระบบ',
+          classId: 'C1_1',
+          classLevel: 'ม.1',
+          classRoom: '1',
+          number: '1'
+        };
+        DB.saveStudent(newStudent);
+        const student = DB.getStudent('STU_TEST_001');
+        exportDiv.appendChild(addTest('export', 'นักเรียนตัวอย่างถูกสร้าง', student !== undefined, 'ID: ' + student?.id));
+
+        // Create sample log
+        const newLog = {
+          id: 'LOG_TEST_001',
+          studentId: 'STU_TEST_001',
+          bookTitle: 'หนังสือทดสอบ',
+          author: 'ผู้แต่งทดสอบ',
+          publisher: 'สำนักพิมพ์ทดสอบ',
+          pages: 200,
+          readDate: new Date().toISOString(),
+          summary: 'สรุปเนื้อหาทดสอบ',
+          lesson: 'ข้อคิดทดสอบ',
+          source: 'แหล่งที่มาทดสอบ',
+          status: 'pending'
+        };
+        DB.saveLog(newLog);
+        const log = DB.getLog('LOG_TEST_001');
+        exportDiv.appendChild(addTest('export', 'บันทึกตัวอย่างถูกสร้าง', log !== undefined, 'ID: ' + log?.id));
+
+        // Test 3.3: Verify export data
+        const hasAllFields = log && log.bookTitle && log.author && log.summary && log.lesson && log.source;
+        exportDiv.appendChild(addTest('export', 'บันทึกมีข้อมูลที่สำคัญ', hasAllFields, 'ทั้งหมด 5 ฟิลด์'));
+
+        // Cleanup
+        DB.delStudent('STU_TEST_001');
+        DB.delLog('LOG_TEST_001');
+
+      } catch (e) {
+        exportDiv.appendChild(addTest('export', 'Export Functionality', false, e.message));
+      }
+    }
+
+    // TEST 4: Removed Data
+    function testRemoved() {
+      const removedDiv = document.getElementById('removed-tests');
+      removedDiv.innerHTML = '';
+
+      try {
+        // Check source code for removed items
+        const appScript = document.querySelector('script[src="app.js"]');
+        
+        // Test 4.1: No THTUPPT01-06 in defaults
+        const tests = [
+          { 
+            name: 'ไม่มี THTUPPT01-06 ในตัวอย่าง',
+            check: () => !['THTUPPT01', 'THTUPPT02', 'THTUPPT03', 'THTUPPT04', 'THTUPPT05', 'THTUPPT06']
+              .some(p => DB.getTeachers().some(t => t.password === p))
+          },
+          {
+            name: 'ไม่มีรหัส admin ตั้งต้น',
+            check: () => DB.getSettings().adminPassword === undefined
+          },
+          {
+            name: 'ฟังก์ชั่น export เพิ่มเสร็จ',
+            check: () => typeof exportStudentReadingForm === 'function'
+          }
+        ];
+
+        tests.forEach(test => {
+          try {
+            removedDiv.appendChild(addTest('removed', test.name, test.check(), '✓ Verified'));
+          } catch (e) {
+            removedDiv.appendChild(addTest('removed', test.name, false, e.message));
+          }
+        });
+
+      } catch (e) {
+        removedDiv.appendChild(addTest('removed', 'Cleanup Tests', false, e.message));
+      }
+    }
+
+    // Run all tests
+    function runAllTests() {
+      document.getElementById('output').textContent = '';
+      results.core = [];
+      results.storage = [];
+      results.export = [];
+      results.removed = [];
+      
+      log('🧪 เริ่มการทดสอบระบบ...');
+      log('');
+      
+      log('📋 ขั้นตอนที่ 1: Core Tests');
+      testCore();
+      
+      log('💾 ขั้นตอนที่ 2: Storage Tests');
+      testStorage();
+      
+      log('📄 ขั้นตอนที่ 3: Export Tests');
+      testExport();
+      
+      log('🗑️ ขั้นตอนที่ 4: Removed Data Tests');
+      testRemoved();
+      
+      log('');
+      log('✅ การทดสอบสำเร็จ');
+      
+      updateStats();
+    }
+
+    // Clear everything
+    function clearStorageAndTests() {
+      if (confirm('ต้องการรีเซ็ตข้อมูลทั้งหมด?')) {
+        localStorage.clear();
+        sessionStorage.clear();
+        results.core = [];
+        results.storage = [];
+        results.export = [];
+        results.removed = [];
+        document.getElementById('core-tests').innerHTML = '';
+        document.getElementById('storage-tests').innerHTML = '';
+        document.getElementById('export-tests').innerHTML = '';
+        document.getElementById('removed-tests').innerHTML = '';
+        document.getElementById('output').textContent = '';
+        document.getElementById('output').style.display = 'none';
+        alert('✅ รีเซ็ตเสร็จ');
+      }
+    }
+
+    // Auto-run on load
+    window.addEventListener('DOMContentLoaded', () => {
+      runAllTests();
+    });
+  </script>
+
+  <!-- Load app.js for testing -->
+  <script src="app.js"></script>
+</body>
+</html>
