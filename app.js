@@ -33,7 +33,7 @@ const DB = (() => {
   const saveScore = s => { if(!s.id)s.id=gid(); s.scoredAt=new Date().toISOString(); const l=ga('scores'); const i=l.findIndex(x=>x.id===s.id); if(i>=0)l[i]=s; else l.push(s); sa('scores',l); return s; };
 
 
-  const getSettings = () => JSON.parse(localStorage.getItem(P+'cfg')||'null') || {schoolName:'โรงเรียนเตรียมอุดมศึกษาพัฒนาการ ปทุมธานี',academicYear:'2569'};
+  const getSettings = () => JSON.parse(localStorage.getItem(P+'cfg')||'null') || {schoolName:'โรงเรียนเตรียมอุดมศึกษาพัฒนาการ ปทุมธานี',academicYear:'2569',adminPassword:'THTUPPT'};
   const saveSettings = s => localStorage.setItem(P+'cfg', JSON.stringify(s));
   const getNotifySettings = () => {
     const saved = JSON.parse(localStorage.getItem(P+'notify')||'null') || {};
